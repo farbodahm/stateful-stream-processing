@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package twitter;
+
+import "google/protobuf/timestamp.proto";
+
+
+
+message Tweet {
+    string tweet_id = 1;
+    string user_id = 2;
+    string text = 3;
+    google.protobuf.Timestamp tweeted_date = 4;
+}
