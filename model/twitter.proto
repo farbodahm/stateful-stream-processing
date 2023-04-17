@@ -5,10 +5,30 @@ package twitter;
 import "google/protobuf/timestamp.proto";
 
 
-
 message Tweet {
     string tweet_id = 1;
     string user_id = 2;
     string text = 3;
     google.protobuf.Timestamp tweeted_date = 4;
+}
+
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    google.protobuf.Timestamp created_date = 4;
+}
+
+message TweetLike {
+    string tweet_id = 1;
+    string user_id = 2;
+    google.protobuf.Timestamp created_date = 3;
+}
+
+message Comment {
+    string id = 1;
+    string tweet_id = 2;
+    string user_id = 3;
+    string text = 4;
+    google.protobuf.Timestamp commented_date = 5;
 }
