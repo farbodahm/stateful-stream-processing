@@ -7,7 +7,7 @@ import datetime
 
 from model import twitter_pb2
 from logger import logging
-from exceptions import UserNotFoundError
+from exceptions import UserNotFoundError, TweetNotFoundError
 
 
 class FakeDataModel:
@@ -17,9 +17,9 @@ class FakeDataModel:
     def __init__(self) -> None:
         self._faker = Faker()
 
-        # List of all of the generated tweet ids
+        # List of all of the generated tweet ids so far
         self._generated_tweet_ids: List[str] = []
-        # List of all of the generated user ids
+        # List of all of the generated user ids so far
         self._generated_user_ids: List[str] = []
 
     def generate_tweet_model(self) -> twitter_pb2.Tweet:
@@ -52,6 +52,29 @@ class FakeDataModel:
         user.created_date.FromDatetime(datetime.datetime.now())
 
         return user
+
+    def generate_tweetlike_model(self) -> twitter_pb2.TweetLike:
+        """Return a new generated fake TweetLike model.
+        This class, models a Tweet liked by a User."""
+        if len(self._generated_user_ids) == 0:
+            logging.error(
+                "No users are created. First you need to create a User "
+                "before creating a new TweetLike.")
+            raise UserNotFoundError("There aren't any users created")
+
+        if len(self._generated_tweet_ids) == 0:
+            logging.error(
+                "No tweets are created. First you need to create a Tweet "
+                "before creating a new TweetLike.")
+            raise TweetNotFoundError("There aren't any tweets created")
+
+        tweetlike = twitter_pb2.TweetLike(
+            tweet_id=random.choice(self._generated_tweet_ids),
+            user_id=random.choice(self._generated_user_ids)
+        )
+        tweetlike.liked_date.FromDatetime(datetime.datetime.now())
+
+        return tweetlike
 
     def _generate_new_tweet_id(self) -> str:
         """Generate a new Tweet id and add that to the list of generated
