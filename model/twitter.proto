@@ -39,3 +39,11 @@ message Comment {
     string text = 4;
     google.protobuf.Timestamp commented_date = 5;
 }
+
+message UserFollow {
+    // User who is followed
+    string followed_id = 1;
+    // User who is following
+    string follower_id = 2;
+    google.protobuf.Timestamp followed_date = 3;
+}

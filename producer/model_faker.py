@@ -35,7 +35,7 @@ class FakeDataModel:
         tweet = twitter_pb2.Tweet(
             tweet_id=self._generate_new_tweet_id(),
             user_id=random.choice(self._generated_user_ids),
-            text=self._faker.text()
+            text=self._faker.text(),
         )
         tweet.tweeted_date.FromDatetime(datetime.datetime.now())
 
@@ -49,7 +49,7 @@ class FakeDataModel:
             last_name=self._faker.last_name(),
             email=self._faker.email(),
             gender=random.choice(
-                [twitter_pb2.User.Gender.FEMALE, twitter_pb2.User.Gender.MALE])
+                [twitter_pb2.User.Gender.FEMALE, twitter_pb2.User.Gender.MALE]),
         )
         user.created_date.FromDatetime(datetime.datetime.now())
 
@@ -72,7 +72,7 @@ class FakeDataModel:
 
         tweetlike = twitter_pb2.TweetLike(
             tweet_id=random.choice(self._generated_tweet_ids),
-            user_id=random.choice(self._generated_user_ids)
+            user_id=random.choice(self._generated_user_ids),
         )
         tweetlike.liked_date.FromDatetime(datetime.datetime.now())
 
@@ -102,6 +102,30 @@ class FakeDataModel:
         comment.commented_date.FromDatetime(datetime.datetime.now())
 
         return comment
+
+    def generate_userfollow_model(self) -> twitter_pb2.UserFollow:
+        """Return a new generated fake UserFollow model.
+        This class, models a User following another User."""
+        if len(self._generated_user_ids) > 2:
+            logging.error(
+                "You need more than 2 users to model a follow. "
+                "First call creating User model 2 times.")
+            raise UserNotFoundError(
+                "You need more than 2 users to model a follow")
+
+        # One user can not follow him/her self
+        followed_id = random.choice(self._generated_user_ids)
+        follower_id = random.choice(self._generated_user_ids)
+        while follower_id == followed_id:
+            follower_id = random.choice(self._generated_user_ids)
+
+        userfollow = twitter_pb2.UserFollow(
+            followed_id=followed_id,
+            follower_id=follower_id,
+        )
+        userfollow.followed_date.FromDatetime(datetime.datetime.now())
+
+        return userfollow
 
     def _generate_new_tweet_id(self) -> str:
         """Generate a new Tweet id and add that to the list of generated
