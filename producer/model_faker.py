@@ -21,6 +21,8 @@ class FakeDataModel:
         self._generated_tweet_ids: List[str] = []
         # List of all of the generated user ids so far
         self._generated_user_ids: List[str] = []
+        # List of all of the generated comment ids so far
+        self._generated_comment_ids: List[str] = []
 
     def generate_tweet_model(self) -> twitter_pb2.Tweet:
         """Return a new generated fake Tweet model"""
@@ -76,6 +78,31 @@ class FakeDataModel:
 
         return tweetlike
 
+    def generate_comment_model(self) -> twitter_pb2.Comment:
+        """Return a new generated fake Comment model.
+        This class, models a Comment made by a User on a Tweet."""
+        if len(self._generated_user_ids) == 0:
+            logging.error(
+                "No users are created. First you need to create a User "
+                "before creating a new Comment.")
+            raise UserNotFoundError("There aren't any users created")
+
+        if len(self._generated_tweet_ids) == 0:
+            logging.error(
+                "No tweets are created. First you need to create a Tweet "
+                "before creating a new Comment.")
+            raise TweetNotFoundError("There aren't any tweets created")
+
+        comment = twitter_pb2.Comment(
+            id=self._generate_new_tweet_id(),
+            tweet_id=random.choice(self._generated_tweet_ids),
+            user_id=random.choice(self._generated_user_ids),
+            text=self._faker.sentence()
+        )
+        comment.commented_date.FromDatetime(datetime.datetime.now())
+
+        return comment
+
     def _generate_new_tweet_id(self) -> str:
         """Generate a new Tweet id and add that to the list of generated
         Tweet ids"""
@@ -91,5 +118,14 @@ class FakeDataModel:
         new_id = str(self._faker.unique.random_int(
             max=FakeDataModel.ID_MAX_INT))
         self._generated_user_ids.append(new_id)
+
+        return new_id
+
+    def _generate_new_comment_id(self) -> str:
+        """Generate a new Comment id and add that to the list of generated
+        Comment ids"""
+        new_id = str(self._faker.unique.random_int(
+            max=FakeDataModel.ID_MAX_INT))
+        self._generated_comment_ids.append(new_id)
 
         return new_id
