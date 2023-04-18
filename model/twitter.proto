@@ -5,10 +5,45 @@ package twitter;
 import "google/protobuf/timestamp.proto";
 
 
-
 message Tweet {
     string tweet_id = 1;
     string user_id = 2;
     string text = 3;
     google.protobuf.Timestamp tweeted_date = 4;
+}
+
+message User {
+    enum Gender {
+        FEMALE = 0;
+        MALE = 1;
+    }
+    
+    string id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string email = 4;
+    Gender gender = 5;
+    google.protobuf.Timestamp created_date = 6;
+}
+
+message TweetLike {
+    string tweet_id = 1;
+    string user_id = 2;
+    google.protobuf.Timestamp created_date = 3;
+}
+
+message Comment {
+    string id = 1;
+    string tweet_id = 2;
+    string user_id = 3;
+    string text = 4;
+    google.protobuf.Timestamp commented_date = 5;
+}
+
+message UserFollow {
+    // User who is followed
+    string followed_id = 1;
+    // User who is following
+    string follower_id = 2;
+    google.protobuf.Timestamp followed_date = 3;
 }
