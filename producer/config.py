@@ -1,13 +1,8 @@
-from typing import Dict
 from dataclasses import dataclass
 import argparse
 
 from confluent_kafka import Producer
-from confluent_kafka.serialization import StringSerializer
-from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
-
-from model import twitter_pb2
 
 
 @dataclass
@@ -19,7 +14,7 @@ class Topics:
     UserFollowsTopic: str = "Model.UserFollows.1"
 
 
-class ConfigGenerator:
+class ClientGenerator:
     """Class for generating required objects based on given CLI configs."""
 
     def __init__(self, args: argparse.Namespace) -> None:
@@ -28,34 +23,6 @@ class ConfigGenerator:
 
         self.producer = self._get_producer_client(
             bootstrap_servers=args.kafka_bootstrap_servers,)
-
-        self.protobuf_serializers = self._get_serializers(
-            schema_registry_client=self.schema_registry_client)
-
-        self.string_serializer = StringSerializer('utf8')
-
-    def _get_serializers(self, schema_registry_client: SchemaRegistryClient) -> Dict[str, ProtobufSerializer]:
-        """Map each topic to its Protobuf Serializer."""
-
-        serializers: Dict[str, ProtobufSerializer] = {
-            Topics.TweetsTopic: ProtobufSerializer(twitter_pb2.Tweet,
-                                                   schema_registry_client,
-                                                   {'use.deprecated.format': False}),
-            Topics.UsersTopic: ProtobufSerializer(twitter_pb2.User,
-                                                  schema_registry_client,
-                                                  {'use.deprecated.format': False}),
-            Topics.CommentsTopic: ProtobufSerializer(twitter_pb2.Comment,
-                                                     schema_registry_client,
-                                                     {'use.deprecated.format': False}),
-            Topics.TweetLikesTopic: ProtobufSerializer(twitter_pb2.TweetLike,
-                                                       schema_registry_client,
-                                                       {'use.deprecated.format': False}),
-            Topics.UserFollowsTopic: ProtobufSerializer(twitter_pb2.UserFollow,
-                                                        schema_registry_client,
-                                                        {'use.deprecated.format': False}),
-        }
-
-        return serializers
 
     def _get_schema_registry_client(self, url: str) -> SchemaRegistryClient:
         """Create and return schema registry client."""
@@ -74,7 +41,7 @@ class ConfigGenerator:
         return producer
 
 
-class CliArgs:
+class CliArgsParser:
     """Class for generating required ArgParse arguments """
 
     def __init__(self) -> None:
