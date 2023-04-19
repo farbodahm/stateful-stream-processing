@@ -11,7 +11,7 @@ from exceptions import UserNotFoundError, TweetNotFoundError
 
 
 class FakeDataModel:
-    """Generate fake model to further produce them in Kafka topics."""
+    """Generate fake models to further produce them in Kafka topics."""
     ID_MAX_INT = 2147483647
 
     def __init__(self) -> None:
