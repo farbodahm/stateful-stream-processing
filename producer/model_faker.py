@@ -33,7 +33,7 @@ class FakeDataModel:
             raise UserNotFoundError("There aren't any users created")
 
         tweet = twitter_pb2.Tweet(
-            tweet_id=self._generate_new_tweet_id(),
+            id=self._generate_new_tweet_id(),
             user_id=random.choice(self._generated_user_ids),
             text=self._faker.text(),
         )
@@ -71,6 +71,8 @@ class FakeDataModel:
             raise TweetNotFoundError("There aren't any tweets created")
 
         tweetlike = twitter_pb2.TweetLike(
+            id=str(self._faker.unique.random_int(
+                max=FakeDataModel.ID_MAX_INT)),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
         )
@@ -120,6 +122,8 @@ class FakeDataModel:
             follower_id = random.choice(self._generated_user_ids)
 
         userfollow = twitter_pb2.UserFollow(
+            id=str(self._faker.unique.random_int(
+                max=FakeDataModel.ID_MAX_INT)),
             followed_id=followed_id,
             follower_id=follower_id,
         )
