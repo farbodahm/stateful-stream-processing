@@ -26,6 +26,8 @@ class FakeDataProducer:
             schema_registry_client=self.schema_registry_client
         )
 
+        self.topics_to_model_generators = self.get_topics_to_model_genarators()
+
     def produce(self, topic: str, key: str, msg: Message) -> None:
         """Produce given model to Kafka"""
         protobuf_serializer = self.protobuf_serializers[topic]
@@ -34,10 +36,12 @@ class FakeDataProducer:
                               key=self.string_serializer(key),
                               value=protobuf_serializer(
                                   msg, SerializationContext(topic, MessageField.VALUE)),
-                              on_delivery=self._delivery_report)
+                              on_delivery=FakeDataProducer._delivery_report,)
 
     def produce_to_topic(self, topic: str) -> None:
-        """Produce given model to Kafka"""
+        """Produce a fake generated model to the given topic"""
+        generated_model = self.topics_to_model_generators[topic]()
+        self.produce(topic=topic, key=generated_model.id, msg=generated_model)
 
     def get_topics_to_model_genarators(self) -> Dict[str, Callable]:
         """Map each topic to its relatated model generator function."""
@@ -79,7 +83,7 @@ class FakeDataProducer:
         """
         Reports the failure or success of a message delivery.
         Args:
-            err (KafkaError): The error that occurred on None on success.
+            err (KafkaError): The error that occurred (None on success).
             msg (Message): The message that was produced or failed.
         """
 
