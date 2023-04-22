@@ -12,3 +12,19 @@ class TweetNotFoundError(ValueError):
     def __init__(self, message: str):
         self.message = message
         super().__init__(message)
+
+
+class ProtobufSerializerNotFoundError(ValueError):
+    """Raise when no serializer is found"""
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
+
+class ModelGeneratorFunctionNotFoundError(ValueError):
+    """Raise when no model generator function is found"""
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)

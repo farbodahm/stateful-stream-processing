@@ -10,6 +10,7 @@ from google.protobuf.message import Message
 from model_faker import FakeDataModel
 from model import twitter_pb2
 from config import Topics
+from exceptions import ModelGeneratorFunctionNotFoundError, ProtobufSerializerNotFoundError
 
 
 class FakeDataProducer:
@@ -26,11 +27,14 @@ class FakeDataProducer:
             schema_registry_client=self.schema_registry_client
         )
 
-        self.topics_to_model_generators = self.get_topics_to_model_genarators()
+        self.topics_to_model_generators = self._get_topics_to_model_genarators()
 
     def produce(self, topic: str, key: str, msg: Message) -> None:
         """Produce given model to Kafka"""
-        protobuf_serializer = self.protobuf_serializers[topic]
+        protobuf_serializer = self.protobuf_serializers.get(topic, None)
+        if protobuf_serializer is None:
+            raise ProtobufSerializerNotFoundError(
+                f'No serializer found for topic: {topic}')
 
         self.producer.produce(topic=topic, partition=0,
                               key=self.string_serializer(key),
@@ -40,10 +44,15 @@ class FakeDataProducer:
 
     def produce_to_topic(self, topic: str) -> None:
         """Produce a fake generated model to the given topic"""
-        generated_model = self.topics_to_model_generators[topic]()
+        model_generator_func = self.topics_to_model_generators.get(topic, None)
+        if model_generator_func is None:
+            raise ModelGeneratorFunctionNotFoundError(
+                f'No model generator found for topic: {topic}')
+
+        generated_model = model_generator_func()
         self.produce(topic=topic, key=generated_model.id, msg=generated_model)
 
-    def get_topics_to_model_genarators(self) -> Dict[str, Callable]:
+    def _get_topics_to_model_genarators(self) -> Dict[str, Callable]:
         """Map each topic to its relatated model generator function."""
         result: Dict[str, Callable] = {
             Topics.TweetsTopic: self.faker.generate_tweet_model,
