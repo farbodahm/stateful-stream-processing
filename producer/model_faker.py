@@ -11,7 +11,7 @@ from exceptions import UserNotFoundError, TweetNotFoundError
 
 
 class FakeDataModel:
-    """Generate fake model to further produce them in Kafka topics."""
+    """Generate fake models to further produce them in Kafka topics."""
     ID_MAX_INT = 2147483647
 
     def __init__(self) -> None:
@@ -33,7 +33,7 @@ class FakeDataModel:
             raise UserNotFoundError("There aren't any users created")
 
         tweet = twitter_pb2.Tweet(
-            tweet_id=self._generate_new_tweet_id(),
+            id=self._generate_new_tweet_id(),
             user_id=random.choice(self._generated_user_ids),
             text=self._faker.text(),
         )
@@ -71,6 +71,8 @@ class FakeDataModel:
             raise TweetNotFoundError("There aren't any tweets created")
 
         tweetlike = twitter_pb2.TweetLike(
+            id=str(self._faker.unique.random_int(
+                max=FakeDataModel.ID_MAX_INT)),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
         )
@@ -106,7 +108,7 @@ class FakeDataModel:
     def generate_userfollow_model(self) -> twitter_pb2.UserFollow:
         """Return a new generated fake UserFollow model.
         This class, models a User following another User."""
-        if len(self._generated_user_ids) > 2:
+        if len(self._generated_user_ids) < 2:
             logging.error(
                 "You need more than 2 users to model a follow. "
                 "First call creating User model 2 times.")
@@ -120,6 +122,8 @@ class FakeDataModel:
             follower_id = random.choice(self._generated_user_ids)
 
         userfollow = twitter_pb2.UserFollow(
+            id=str(self._faker.unique.random_int(
+                max=FakeDataModel.ID_MAX_INT)),
             followed_id=followed_id,
             follower_id=follower_id,
         )
