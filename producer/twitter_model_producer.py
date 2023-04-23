@@ -4,13 +4,14 @@ from typing import Dict, Callable
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaError, Message as KafkaMessage
 from google.protobuf.message import Message
 
 from model_faker import FakeDataModel
 from model import twitter_pb2
 from config import Topics
 from exceptions import ModelGeneratorFunctionNotFoundError, ProtobufSerializerNotFoundError
+from logger import logging
 
 
 class FakeDataProducer:
@@ -88,16 +89,16 @@ class FakeDataProducer:
         return serializers
 
     @staticmethod
-    def _delivery_report(err, msg):
+    def _delivery_report(err: KafkaError, msg: KafkaMessage) -> None:
         """
         Reports the failure or success of a message delivery.
         Args:
             err (KafkaError): The error that occurred (None on success).
             msg (Message): The message that was produced or failed.
         """
-
         if err is not None:
-            print("Delivery failed for User record {}: {}".format(msg.key(), err))
-            return
-        print('User record {} successfully produced to {} [{}] at offset {}'.format(
-            msg.key(), msg.topic(), msg.partition(), msg.offset()))
+            logging.error(
+                f'Delivery failed to topic={msg.topic()}, '
+                f'partition={msg.partition()}, '
+                f'offset={msg.offset()} for Message with id={msg.key()}: {err}',
+            )

@@ -28,8 +28,13 @@ def generate_fake_data(producer: FakeDataProducer) -> None:
         try:
             producer.produce_to_topic(topic=topic)
         except NotFoundError as e:
-            print(e)
+            # Pass the not found exceptions as in the next call, resource may be created
+            logging.error(e)
+
         sleep(2)
+
+    # TODO: Gracefully kill the application
+    # producer.producer.flush()
 
 
 def main() -> None:
