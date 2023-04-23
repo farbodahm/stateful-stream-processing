@@ -30,7 +30,7 @@ message TweetLike {
     string id = 1;
     string tweet_id = 2;
     string user_id = 3;
-    google.protobuf.Timestamp created_date = 4;
+    google.protobuf.Timestamp liked_date = 4;
 }
 
 message Comment {

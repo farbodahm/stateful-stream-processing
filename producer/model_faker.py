@@ -108,7 +108,7 @@ class FakeDataModel:
     def generate_userfollow_model(self) -> twitter_pb2.UserFollow:
         """Return a new generated fake UserFollow model.
         This class, models a User following another User."""
-        if len(self._generated_user_ids) > 2:
+        if len(self._generated_user_ids) < 2:
             logging.error(
                 "You need more than 2 users to model a follow. "
                 "First call creating User model 2 times.")
