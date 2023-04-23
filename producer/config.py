@@ -14,6 +14,16 @@ class Topics:
     UserFollowsTopic: str = "Model.UserFollows.1"
 
 
+# Dictionary of topics and their producing probability.
+TOPICS_TO_PRODUCING_PROBABILITY = {
+    Topics.TweetsTopic: 0.3,
+    Topics.UsersTopic: 0.2,
+    Topics.CommentsTopic: 0.2,
+    Topics.TweetLikesTopic: 0.1,
+    Topics.UserFollowsTopic: 0.1,
+}
+
+
 class ClientGenerator:
     """Class for generating required objects based on given CLI configs."""
 
