@@ -1,10 +1,11 @@
 import random
 from time import sleep
 
-from config import CliArgsParser, ClientGenerator, TOPICS_TO_PRODUCING_PROBABILITY
+from config import CliArgsParser, ClientGenerator
 from twitter_model_producer import FakeDataProducer
-from exceptions import NotFoundError
-from logger import logging
+from utility.exceptions import NotFoundError
+from utility.logger import logging
+from utility.generic_configs import TOPICS_TO_PRODUCING_PROBABILITY
 
 TOPICS = [
     topic for topic in TOPICS_TO_PRODUCING_PROBABILITY.keys()

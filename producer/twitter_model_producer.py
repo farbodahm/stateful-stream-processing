@@ -1,6 +1,5 @@
 from typing import Dict, Callable
 
-
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
@@ -9,9 +8,9 @@ from google.protobuf.message import Message
 
 from model_faker import FakeDataModel
 from model import twitter_pb2
-from config import Topics
-from exceptions import ModelGeneratorFunctionNotFoundError, ProtobufSerializerNotFoundError
-from logger import logging
+from utility.generic_configs import Topics
+from utility.exceptions import ModelGeneratorFunctionNotFoundError, ProtobufSerializerNotFoundError
+from utility.logger import logging
 
 
 class FakeDataProducer:
