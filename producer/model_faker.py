@@ -6,8 +6,8 @@ import random
 import datetime
 
 from model import twitter_pb2
-from logger import logging
-from exceptions import UserNotFoundError, TweetNotFoundError
+from utility.logger import logging
+from utility.exceptions import UserNotFoundError, TweetNotFoundError
 
 
 class FakeDataModel:
