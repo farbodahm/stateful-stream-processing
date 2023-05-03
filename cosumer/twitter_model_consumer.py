@@ -7,6 +7,7 @@ from confluent_kafka.serialization import SerializationContext, MessageField
 from google.protobuf.message import Message
 
 from model import twitter_pb2
+from dabase_writer import DatabaseWriter
 from utility.generic_configs import Topics
 from utility.logger import logging
 from utility.exceptions import ProtobufDeserializerNotFound
@@ -15,8 +16,11 @@ from utility.exceptions import ProtobufDeserializerNotFound
 class FakeDataConsumer:
     """Main class for consuming Twitter data from Kafka."""
 
-    def __init__(self, consumer: Consumer, topics: Topics) -> None:
+    def __init__(
+        self, consumer: Consumer, topics: Topics, db_writer: DatabaseWriter
+    ) -> None:
         self.consumer = consumer
+        self.db_writer = db_writer
 
         # Subscribe to given topics
         topics: List[str] = [topic.default for topic in fields(Topics)]
@@ -59,8 +63,11 @@ class FakeDataConsumer:
 
     def _process_message(self, protobuf_message: Message, topic: str) -> None:
         """Process recieved Protobuf message."""
-        # TODO: Complete process function
+        # TODO: Remove after tests finished
         logging.info(f"Processing from {topic} message {protobuf_message}")
+
+        if topic == Topics.UsersTopic:
+            self.db_writer.write_to_database(topic=topic, message=protobuf_message)
 
     def _get_deserializers(self) -> Dict[str, ProtobufDeserializer]:
         """Map each topic to its Protobuf Deserializer."""
