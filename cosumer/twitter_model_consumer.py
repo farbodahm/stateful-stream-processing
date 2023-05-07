@@ -9,7 +9,7 @@ from google.protobuf.message import Message
 from model import twitter_pb2
 from dabase_writer import DatabaseWriter
 from utility.generic_configs import Topics
-from utility.logger import logging
+from utility.logger import logger
 from utility.exceptions import ProtobufDeserializerNotFound
 
 
@@ -24,7 +24,7 @@ class FakeDataConsumer:
 
         # Subscribe to given topics
         topics: List[str] = [topic.default for topic in fields(Topics)]
-        logging.info(f"Subscribing to topics: {topics}")
+        logger.info(f"Subscribing to topics: {topics}")
         self.consumer.subscribe(topics)
 
         # Deserializers
@@ -33,7 +33,7 @@ class FakeDataConsumer:
     def consume(self) -> None:
         """Consume data from Kafka."""
 
-        logging.info("Starting to consume data from Kafka.")
+        logger.info("Starting to consume data from Kafka.")
 
         while True:
             message: KafkaMessage = self.consumer.poll(timeout=1.0)
@@ -42,19 +42,19 @@ class FakeDataConsumer:
 
             topic = message.topic()
             if message.error() is not None:
-                logging.error(
+                logger.error(
                     f"Error while consuming data from {topic}: {message.error()}"
                 )
                 continue
 
-            logging.info(f"Consumed message from topic {topic}")
+            logger.info(f"Consumed message from topic {topic}")
 
             protobuf_message = self._deserialize_message(message)
 
             try:
                 self._process_message(protobuf_message, topic)
             except Exception as e:
-                logging.error(
+                logger.error(
                     f"Error while processing message {protobuf_message} from {topic}: {e}"
                 )
 
@@ -64,9 +64,9 @@ class FakeDataConsumer:
     def _process_message(self, protobuf_message: Message, topic: str) -> None:
         """Process recieved Protobuf message."""
         # TODO: Remove after tests finished
-        logging.info(f"Processing from {topic} message {protobuf_message}")
+        logger.info(f"Processing from {topic} message {protobuf_message}")
 
-        if topic == Topics.UsersTopic:
+        if topic == Topics.UsersTopic or topic == Topics.TweetsTopic:
             self.db_writer.write_to_database(topic=topic, message=protobuf_message)
 
     def _get_deserializers(self) -> Dict[str, ProtobufDeserializer]:

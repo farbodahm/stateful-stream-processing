@@ -4,19 +4,17 @@ from time import sleep
 from config import CliArgsParser, ClientGenerator
 from twitter_model_producer import FakeDataProducer
 from utility.exceptions import NotFoundError
-from utility.logger import logging
+from utility.logger import logger
 from utility.generic_configs import TOPICS_TO_PRODUCING_PROBABILITY
 
-TOPICS = [
-    topic for topic in TOPICS_TO_PRODUCING_PROBABILITY.keys()
-]
+TOPICS = [topic for topic in TOPICS_TO_PRODUCING_PROBABILITY.keys()]
 PROBABILITIES = [
     probability for probability in TOPICS_TO_PRODUCING_PROBABILITY.values()
 ]
 
 
 def get_next_topic() -> str:
-    """Returns next topic name to produce data based on given """
+    """Returns next topic name to produce data based on given"""
     topic = random.choices(TOPICS, weights=PROBABILITIES)[0]
     return topic
 
@@ -25,12 +23,12 @@ def generate_fake_data(producer: FakeDataProducer) -> None:
     """Main unlimited loop for generating fake data"""
     while True:
         topic = get_next_topic()
-        logging.info(f"Producing data to topic: {topic}")
+        logger.info(f"Producing data to topic: {topic}")
         try:
             producer.produce_to_topic(topic=topic)
         except NotFoundError as e:
             # Pass the not found exceptions as in the next call, resource may be created
-            logging.error(e)
+            logger.error(e)
 
         sleep(2)
 

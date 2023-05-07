@@ -5,7 +5,6 @@ from model.twitter_database_model import Base
 from dabase_writer import DatabaseWriter
 from config import CliArgsParser, ClientGenerator
 from twitter_model_consumer import FakeDataConsumer
-from utility.logger import logging
 from utility.generic_configs import Topics
 
 
