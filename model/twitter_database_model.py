@@ -3,11 +3,8 @@ from typing import Optional
 from datetime import datetime
 import enum
 
-from sqlalchemy import ForeignKey, String, Enum, DateTime
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey, String, Enum, DateTime, Table, Column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Gender(enum.Enum):
@@ -17,6 +14,25 @@ class Gender(enum.Enum):
 
 class Base(DeclarativeBase):
     pass
+
+
+# tweet_like_association_table = Table(
+#     "tweet_like",
+#     Base.metadata,
+#     Column("id", primary_key=True),
+#     Column("user_id", ForeignKey("user.id")),
+#     Column("tweet_id", ForeignKey("tweet.id")),
+#     Column("liked_date", DateTime),
+# )
+
+
+class TweetLike(Base):
+    __tablename__ = "tweet_like"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tweet_id: Mapped[int] = mapped_column(ForeignKey("tweet.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    liked_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
 
 class User(Base):
@@ -29,15 +45,23 @@ class User(Base):
     gender: Mapped[Gender] = mapped_column(Enum(Gender))
     created_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
+    # Relationships
+    tweets: Mapped[List["Tweet"]] = relationship("Tweet", back_populates="user")
+    liked_tweets: Mapped[List["Tweet"]] = relationship(
+        secondary=TweetLike.__table__, back_populates="liked_by"
+    )
 
-#     addresses: Mapped[List["Address"]] = relationship(
-#         back_populates="user", cascade="all, delete-orphan"
-#     )
 
+class Tweet(Base):
+    __tablename__ = "tweet"
 
-# class Address(Base):
-#     __tablename__ = "address"
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     email_address: Mapped[str]
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user_account.id"))
-#     user: Mapped["User"] = relationship(back_populates="addresses")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str] = mapped_column(String(255))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    tweeted_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", back_populates="tweets")
+    liked_by: Mapped[List["User"]] = relationship(
+        secondary=TweetLike.__table__, back_populates="liked_tweets"
+    )

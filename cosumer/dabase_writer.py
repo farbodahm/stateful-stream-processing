@@ -2,18 +2,29 @@ from typing import Dict, Callable, List
 
 from sqlalchemy.orm import Session
 from google.protobuf.message import Message
+from sqlalchemy.exc import IntegrityError
 
 from model import twitter_pb2
-from model.twitter_database_model import Base, User, Gender
+from model.twitter_database_model import (
+    Base,
+    User,
+    Gender,
+    Tweet,
+    TweetLike,
+)
 from utility.generic_configs import Topics
-from utility.logger import logging
+from utility.logger import logger
 from utility.exceptions import ProtobufToORMTransformerNotFound
 
 
 class DatabaseWriter:
     """Class for writing consumed Protobuf messages to database."""
 
-    def __init__(self, db_session: Session, max_write_pool_buffer: int = 5) -> None:
+    def __init__(
+        self,
+        db_session: Session,
+        max_write_pool_buffer: int = 5,
+    ) -> None:
         self.db_session = db_session
 
         self.topic_to_transformers = self._topic_to_transformer()
@@ -23,9 +34,13 @@ class DatabaseWriter:
         self.max_write_pool_buffer = max_write_pool_buffer
         self._write_pool_buffer: List[Base] = []
 
+        # A child record may be recieved faster than the parent record from Kafka
+        # topics. So it will be failed to write to DB because of ForeignKey
+        # constraint violation. We store it in a temp buffer and try to write it in next cycles.
+        self._fk_constraint_failed_buffer: List[Base] = []
+
     def write_to_database(self, topic: str, message: Message) -> None:
         """Add Protobuf message to DB write pool and flush the write pool when threshold reached."""
-
         transformer = self.topic_to_transformers.get(topic, None)
         if transformer is None:
             raise ProtobufToORMTransformerNotFound(
@@ -35,7 +50,7 @@ class DatabaseWriter:
         try:
             db_model = transformer(message)
         except Exception as e:
-            logging.error(
+            logger.error(
                 f"Error while transforming Protobuf message {message} to ORM model: {e}"
             )
             raise e
@@ -47,18 +62,66 @@ class DatabaseWriter:
 
     def _flush_write_pool(self) -> None:
         """Flush pool to database."""
-        logging.info(
+        logger.info(
             f"Flushing write pool with {len(self._write_pool_buffer)} messages to database."
         )
-        self.db_session.add_all(self._write_pool_buffer)
 
+        self.db_session.add_all(self._write_pool_buffer)
         try:
             self.db_session.commit()
+        except IntegrityError as e:
+            # Parent record is not processed yet; Insert records into a temp buffer
+            # and try to save later again.
+            logger.warning(f"Forign ket violation: {e}")
+            self.db_session.rollback()
+            self._fk_constraint_failed_buffer += self._write_pool_buffer
+            self._write_pool_buffer = []
+            return
         except Exception as e:
-            logging.error(f"Error while committing write pool to database: {e}")
+            logger.error(f"Error while committing write pool to database: {e}")
             raise e
 
         self._write_pool_buffer.clear()
+
+        if len(self._fk_constraint_failed_buffer) > 0:
+            self._flush_fk_constraint_failed_pool()
+
+    def _flush_fk_constraint_failed_pool(self) -> None:
+        """Flush list which contains records that failed to write to DB
+        because of FK constraint failed error."""
+        logger.info(
+            f"Flushing FK constraint failed pool with {len(self._fk_constraint_failed_buffer)} records"
+        )
+        temp_backup_pool: List[Base] = []
+
+        for record in self._fk_constraint_failed_buffer:
+            self.db_session.add(record)
+            try:
+                self.db_session.commit()
+            except IntegrityError as e:
+                # Parent record is not added yet, store it for next cycle.
+                self.db_session.rollback()
+                temp_backup_pool.append(record)
+                continue
+            except Exception as e:
+                logger.error(f"Error while committing backup pool to database: {e}")
+                raise e
+
+        self._fk_constraint_failed_buffer = temp_backup_pool
+        logger.info(
+            f"After flushing FK constraint failed pool: {len(self._fk_constraint_failed_buffer)}"
+        )
+
+    def _topic_to_transformer(self) -> Dict[str, Callable[[Message], Base]]:
+        """Map each topic to its Protobuf to ORM model transformer."""
+
+        transformers = {
+            Topics.UsersTopic: self._transform_user_protobuf_to_db_model,
+            Topics.TweetsTopic: self._transform_tweet_protobuf_to_db_model,
+            Topics.TweetLikesTopic: self._transform_tweet_like_protobuf_to_db_model,
+        }
+
+        return transformers
 
     def _transform_user_protobuf_to_db_model(
         self, protobuf_message: twitter_pb2.User
@@ -76,11 +139,28 @@ class DatabaseWriter:
         )
         return user
 
-    def _topic_to_transformer(self) -> Dict[str, Callable[[Message], Base]]:
-        """Map each topic to its Protobuf to ORM model transformer."""
+    def _transform_tweet_protobuf_to_db_model(
+        self, protobuf_message: twitter_pb2.Tweet
+    ) -> User:
+        """Transforms Protobuf Tweet message to related database model."""
 
-        transformers = {
-            Topics.UsersTopic: self._transform_user_protobuf_to_db_model,
-        }
+        tweet = Tweet(
+            id=int(protobuf_message.id),
+            text=protobuf_message.text,
+            user_id=int(protobuf_message.user_id),
+            tweeted_date=protobuf_message.tweeted_date.ToDatetime(),
+        )
+        return tweet
 
-        return transformers
+    def _transform_tweet_like_protobuf_to_db_model(
+        self, protobuf_message: twitter_pb2.TweetLike
+    ) -> User:
+        """Transforms Protobuf Tweet message to related database model."""
+
+        tweet = TweetLike(
+            id=int(protobuf_message.id),
+            tweet_id=int(protobuf_message.tweet_id),
+            user_id=int(protobuf_message.user_id),
+            liked_date=protobuf_message.liked_date.ToDatetime(),
+        )
+        return tweet

@@ -66,7 +66,11 @@ class FakeDataConsumer:
         # TODO: Remove after tests finished
         logger.info(f"Processing from {topic} message {protobuf_message}")
 
-        if topic == Topics.UsersTopic or topic == Topics.TweetsTopic:
+        if (
+            topic == Topics.UsersTopic
+            or topic == Topics.TweetsTopic
+            or topic == Topics.TweetLikesTopic
+        ):
             self.db_writer.write_to_database(topic=topic, message=protobuf_message)
 
     def _get_deserializers(self) -> Dict[str, ProtobufDeserializer]:
