@@ -3,6 +3,7 @@ from typing import Dict, Callable, List
 from sqlalchemy.orm import Session
 from google.protobuf.message import Message
 from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation
 
 from model import twitter_pb2
 from model.twitter_database_model import (
@@ -99,6 +100,12 @@ class DatabaseWriter:
             try:
                 self.db_session.commit()
             except IntegrityError as e:
+                if isinstance(e.orig, UniqueViolation):
+                    logger.warning(
+                        f"{record} Unique Primary Key violation; Ignoring record..."
+                    )
+                    self.db_session.rollback()
+                    continue
                 # Parent record is not added yet, store it for next cycle.
                 self.db_session.rollback()
                 temp_backup_pool.append(record)
