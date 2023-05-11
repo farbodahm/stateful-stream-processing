@@ -102,7 +102,7 @@ class FakeDataModel:
             raise TweetNotFoundError("There aren't any tweets created")
 
         comment = twitter_pb2.Comment(
-            id=self._generate_new_tweet_id(),
+            id=self._generate_new_comment_id(),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
             text=self._faker.sentence(),
