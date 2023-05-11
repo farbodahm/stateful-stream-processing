@@ -70,6 +70,7 @@ class FakeDataConsumer:
             topic == Topics.UsersTopic
             or topic == Topics.TweetsTopic
             or topic == Topics.TweetLikesTopic
+            or topic == Topics.CommentsTopic
         ):
             self.db_writer.write_to_database(topic=topic, message=protobuf_message)
 

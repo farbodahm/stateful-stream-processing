@@ -1,4 +1,5 @@
 from typing import Dict, Callable, List
+from copy import deepcopy
 
 from sqlalchemy.orm import Session
 from google.protobuf.message import Message
@@ -12,6 +13,7 @@ from model.twitter_database_model import (
     Gender,
     Tweet,
     TweetLike,
+    Comment,
 )
 from utility.generic_configs import Topics
 from utility.logger import logger
@@ -67,20 +69,20 @@ class DatabaseWriter:
             f"Flushing write pool with {len(self._write_pool_buffer)} messages to database."
         )
 
-        self.db_session.add_all(self._write_pool_buffer)
         try:
+            self.db_session.bulk_save_objects(self._write_pool_buffer)
             self.db_session.commit()
         except IntegrityError as e:
             # Parent record is not processed yet; Insert records into a temp buffer
             # and try to save later again.
             logger.warning(f"Forign ket violation: {e}")
             self.db_session.rollback()
-            self._fk_constraint_failed_buffer += self._write_pool_buffer
-            self._write_pool_buffer = []
-            return
+            self._fk_constraint_failed_buffer += deepcopy(self._write_pool_buffer)
         except Exception as e:
             logger.error(f"Error while committing write pool to database: {e}")
             raise e
+        else:
+            logger.info("Successfully committed write pool to database")
 
         self._write_pool_buffer.clear()
 
@@ -107,9 +109,9 @@ class DatabaseWriter:
                     self.db_session.rollback()
                     continue
                 # Parent record is not added yet, store it for next cycle.
+                logger.warning(f"Failed to insert record again: {e}")
                 self.db_session.rollback()
                 temp_backup_pool.append(record)
-                continue
             except Exception as e:
                 logger.error(f"Error while committing backup pool to database: {e}")
                 raise e
@@ -126,6 +128,7 @@ class DatabaseWriter:
             Topics.UsersTopic: self._transform_user_protobuf_to_db_model,
             Topics.TweetsTopic: self._transform_tweet_protobuf_to_db_model,
             Topics.TweetLikesTopic: self._transform_tweet_like_protobuf_to_db_model,
+            Topics.CommentsTopic: self._transform_comment_protobuf_to_db_model,
         }
 
         return transformers
@@ -164,10 +167,24 @@ class DatabaseWriter:
     ) -> User:
         """Transforms Protobuf Tweet message to related database model."""
 
-        tweet = TweetLike(
+        tweet_like = TweetLike(
             id=int(protobuf_message.id),
             tweet_id=int(protobuf_message.tweet_id),
             user_id=int(protobuf_message.user_id),
             liked_date=protobuf_message.liked_date.ToDatetime(),
         )
-        return tweet
+        return tweet_like
+
+    def _transform_comment_protobuf_to_db_model(
+        self, protobuf_message: twitter_pb2.Comment
+    ) -> User:
+        """Transforms Protobuf Comment message to related database model."""
+
+        comment = Comment(
+            id=int(protobuf_message.id),
+            tweet_id=int(protobuf_message.tweet_id),
+            user_id=int(protobuf_message.user_id),
+            text=protobuf_message.text,
+            commented_date=protobuf_message.commented_date.ToDatetime(),
+        )
+        return comment

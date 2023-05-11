@@ -50,6 +50,7 @@ class User(Base):
     liked_tweets: Mapped[List["Tweet"]] = relationship(
         secondary=TweetLike.__table__, back_populates="liked_by"
     )
+    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="user")
 
 
 class Tweet(Base):
@@ -65,3 +66,18 @@ class Tweet(Base):
     liked_by: Mapped[List["User"]] = relationship(
         secondary=TweetLike.__table__, back_populates="liked_tweets"
     )
+    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="tweet")
+
+
+class Comment(Base):
+    __tablename__ = "comment"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tweet_id: Mapped[int] = mapped_column(ForeignKey("tweet.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    text: Mapped[str] = mapped_column(String(255))
+    commented_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+
+    # Relationships
+    user: Mapped["User"] = relationship("User", back_populates="comments")
+    tweet: Mapped["Tweet"] = relationship("Tweet", back_populates="comments")
