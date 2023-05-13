@@ -35,6 +35,15 @@ class TweetLike(Base):
     liked_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
 
+class UserFollow(Base):
+    __tablename__ = "user_follow"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    followed_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+
+
 class User(Base):
     __tablename__ = "user"
 
@@ -51,6 +60,20 @@ class User(Base):
         secondary=TweetLike.__table__, back_populates="liked_by"
     )
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="user")
+    followed: Mapped[List["User"]] = relationship(
+        "User",
+        secondary=UserFollow.__table__,
+        primaryjoin=(UserFollow.follower_id == id),
+        secondaryjoin=(UserFollow.followed_id == id),
+        lazy="dynamic",
+    )
+    followers: Mapped[List["User"]] = relationship(
+        "User",
+        secondary=UserFollow.__table__,
+        primaryjoin=(UserFollow.followed_id == id),
+        secondaryjoin=(UserFollow.follower_id == id),
+        lazy="dynamic",
+    )
 
 
 class Tweet(Base):

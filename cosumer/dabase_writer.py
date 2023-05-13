@@ -14,6 +14,7 @@ from model.twitter_database_model import (
     Tweet,
     TweetLike,
     Comment,
+    UserFollow,
 )
 from utility.generic_configs import Topics
 from utility.logger import logger
@@ -129,6 +130,7 @@ class DatabaseWriter:
             Topics.TweetsTopic: self._transform_tweet_protobuf_to_db_model,
             Topics.TweetLikesTopic: self._transform_tweet_like_protobuf_to_db_model,
             Topics.CommentsTopic: self._transform_comment_protobuf_to_db_model,
+            Topics.UserFollowsTopic: self._transform_user_follow_protobuf_to_db_model,
         }
 
         return transformers
@@ -188,3 +190,16 @@ class DatabaseWriter:
             commented_date=protobuf_message.commented_date.ToDatetime(),
         )
         return comment
+
+    def _transform_user_follow_protobuf_to_db_model(
+        self, protobuf_message: twitter_pb2.UserFollow
+    ) -> User:
+        """Transforms Protobuf UserFollow message to related database model."""
+
+        user_follow = UserFollow(
+            id=int(protobuf_message.id),
+            followed_id=int(protobuf_message.followed_id),
+            follower_id=int(protobuf_message.follower_id),
+            followed_date=protobuf_message.followed_date.ToDatetime(),
+        )
+        return user_follow
