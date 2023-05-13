@@ -1,4 +1,3 @@
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from model.twitter_database_model import Base
@@ -6,11 +5,6 @@ from dabase_writer import DatabaseWriter
 from config import CliArgsParser, ClientGenerator
 from twitter_model_consumer import FakeDataConsumer
 from utility.generic_configs import Topics
-
-
-DB_ENGINE = create_engine(
-    "postgresql+psycopg2://postgres:postgres@localhost:5432/twitter", echo=True
-)
 
 
 def main() -> None:
@@ -21,9 +15,9 @@ def main() -> None:
     clients = ClientGenerator(cli_args)
 
     # Create tables
-    Base.metadata.create_all(DB_ENGINE)
+    Base.metadata.create_all(clients.db_engine)
 
-    with Session(DB_ENGINE) as session:
+    with Session(clients.db_engine) as session:
         db_writer = DatabaseWriter(db_session=session)
         consumer = FakeDataConsumer(
             consumer=clients.consumer, topics=Topics(), db_writer=db_writer
