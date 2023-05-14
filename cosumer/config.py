@@ -1,6 +1,8 @@
 import argparse
 
 from confluent_kafka import Consumer
+from sqlalchemy import create_engine
+from sqlalchemy import Engine
 
 
 class ClientGenerator:
@@ -11,6 +13,14 @@ class ClientGenerator:
             bootstrap_servers=args.kafka_bootstrap_servers,
             consumer_group=args.consumer_group,
             reset_offset=args.reset_offset,
+        )
+
+        self.db_engine = self._get_db_engine(
+            ip=args.database_ip,
+            port=args.database_port,
+            username=args.database_username,
+            password=args.database_password,
+            db_name=args.database_name,
         )
 
     def _get_consumer_client(
@@ -33,6 +43,15 @@ class ClientGenerator:
         consumer = Consumer(consumer_conf)
 
         return consumer
+
+    def _get_db_engine(
+        self, ip: str, port: str, username: str, password: str, db_name: str
+    ) -> Engine:
+        """Create and return SQLAlchemy Engine object."""
+        db_url = f"postgresql+psycopg2://{username}:{password}@{ip}:{port}/{db_name}"
+        engine = create_engine(db_url, echo=True)
+
+        return engine
 
 
 class CliArgsParser:
@@ -74,4 +93,34 @@ class CliArgsParser:
             default=True,
             action="store_true",
             help="Reset offset to earliest",
+        )
+        self.parser.add_argument(
+            "--db-ip",
+            dest="database_ip",
+            default="localhost",
+            help="Databse IP",
+        )
+        self.parser.add_argument(
+            "--db-port",
+            dest="database_port",
+            default="5432",
+            help="Databse Port",
+        )
+        self.parser.add_argument(
+            "--db-user",
+            dest="database_username",
+            default="postgres",
+            help="Databse Username",
+        )
+        self.parser.add_argument(
+            "--db-password",
+            dest="database_password",
+            default="postgres",
+            help="Databse Password",
+        )
+        self.parser.add_argument(
+            "--db-name",
+            dest="database_name",
+            default="twitter",
+            help="Databse Name",
         )

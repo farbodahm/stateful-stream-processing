@@ -6,12 +6,13 @@ import random
 import datetime
 
 from model import twitter_pb2
-from utility.logger import logging
+from utility.logger import logger
 from utility.exceptions import UserNotFoundError, TweetNotFoundError
 
 
 class FakeDataModel:
     """Generate fake models to further produce them in Kafka topics."""
+
     ID_MAX_INT = 2147483647
 
     def __init__(self) -> None:
@@ -27,9 +28,10 @@ class FakeDataModel:
     def generate_tweet_model(self) -> twitter_pb2.Tweet:
         """Return a new generated fake Tweet model"""
         if len(self._generated_user_ids) == 0:
-            logging.error(
+            logger.error(
                 "No users are created. First you need to create a User "
-                "before creating a new Tweet.")
+                "before creating a new Tweet."
+            )
             raise UserNotFoundError("There aren't any users created")
 
         tweet = twitter_pb2.Tweet(
@@ -49,7 +51,8 @@ class FakeDataModel:
             last_name=self._faker.last_name(),
             email=self._faker.email(),
             gender=random.choice(
-                [twitter_pb2.User.Gender.FEMALE, twitter_pb2.User.Gender.MALE]),
+                [twitter_pb2.User.Gender.FEMALE, twitter_pb2.User.Gender.MALE]
+            ),
         )
         user.created_date.FromDatetime(datetime.datetime.now())
 
@@ -59,20 +62,21 @@ class FakeDataModel:
         """Return a new generated fake TweetLike model.
         This class, models a Tweet liked by a User."""
         if len(self._generated_user_ids) == 0:
-            logging.error(
+            logger.error(
                 "No users are created. First you need to create a User "
-                "before creating a new TweetLike.")
+                "before creating a new TweetLike."
+            )
             raise UserNotFoundError("There aren't any users created")
 
         if len(self._generated_tweet_ids) == 0:
-            logging.error(
+            logger.error(
                 "No tweets are created. First you need to create a Tweet "
-                "before creating a new TweetLike.")
+                "before creating a new TweetLike."
+            )
             raise TweetNotFoundError("There aren't any tweets created")
 
         tweetlike = twitter_pb2.TweetLike(
-            id=str(self._faker.unique.random_int(
-                max=FakeDataModel.ID_MAX_INT)),
+            id=str(self._faker.unique.random_int(max=FakeDataModel.ID_MAX_INT)),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
         )
@@ -84,22 +88,24 @@ class FakeDataModel:
         """Return a new generated fake Comment model.
         This class, models a Comment made by a User on a Tweet."""
         if len(self._generated_user_ids) == 0:
-            logging.error(
+            logger.error(
                 "No users are created. First you need to create a User "
-                "before creating a new Comment.")
+                "before creating a new Comment."
+            )
             raise UserNotFoundError("There aren't any users created")
 
         if len(self._generated_tweet_ids) == 0:
-            logging.error(
+            logger.error(
                 "No tweets are created. First you need to create a Tweet "
-                "before creating a new Comment.")
+                "before creating a new Comment."
+            )
             raise TweetNotFoundError("There aren't any tweets created")
 
         comment = twitter_pb2.Comment(
-            id=self._generate_new_tweet_id(),
+            id=self._generate_new_comment_id(),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
-            text=self._faker.sentence()
+            text=self._faker.sentence(),
         )
         comment.commented_date.FromDatetime(datetime.datetime.now())
 
@@ -109,11 +115,11 @@ class FakeDataModel:
         """Return a new generated fake UserFollow model.
         This class, models a User following another User."""
         if len(self._generated_user_ids) < 2:
-            logging.error(
+            logger.error(
                 "You need more than 2 users to model a follow. "
-                "First call creating User model 2 times.")
-            raise UserNotFoundError(
-                "You need more than 2 users to model a follow")
+                "First call creating User model 2 times."
+            )
+            raise UserNotFoundError("You need more than 2 users to model a follow")
 
         # One user can not follow him/her self
         followed_id = random.choice(self._generated_user_ids)
@@ -122,8 +128,7 @@ class FakeDataModel:
             follower_id = random.choice(self._generated_user_ids)
 
         userfollow = twitter_pb2.UserFollow(
-            id=str(self._faker.unique.random_int(
-                max=FakeDataModel.ID_MAX_INT)),
+            id=str(self._faker.unique.random_int(max=FakeDataModel.ID_MAX_INT)),
             followed_id=followed_id,
             follower_id=follower_id,
         )
@@ -134,8 +139,7 @@ class FakeDataModel:
     def _generate_new_tweet_id(self) -> str:
         """Generate a new Tweet id and add that to the list of generated
         Tweet ids"""
-        new_id = str(self._faker.unique.random_int(
-            max=FakeDataModel.ID_MAX_INT))
+        new_id = str(self._faker.unique.random_int(max=FakeDataModel.ID_MAX_INT))
         self._generated_tweet_ids.append(new_id)
 
         return new_id
@@ -143,8 +147,7 @@ class FakeDataModel:
     def _generate_new_user_id(self) -> str:
         """Generate a new User id and add that to the list of generated
         User ids"""
-        new_id = str(self._faker.unique.random_int(
-            max=FakeDataModel.ID_MAX_INT))
+        new_id = str(self._faker.unique.random_int(max=FakeDataModel.ID_MAX_INT))
         self._generated_user_ids.append(new_id)
 
         return new_id
@@ -152,8 +155,7 @@ class FakeDataModel:
     def _generate_new_comment_id(self) -> str:
         """Generate a new Comment id and add that to the list of generated
         Comment ids"""
-        new_id = str(self._faker.unique.random_int(
-            max=FakeDataModel.ID_MAX_INT))
+        new_id = str(self._faker.unique.random_int(max=FakeDataModel.ID_MAX_INT))
         self._generated_comment_ids.append(new_id)
 
         return new_id
