@@ -1,4 +1,6 @@
 FROM python:3.11-slim-bullseye
+ARG KAFKA_BROKER
+ARG SCHEMA_REGISTRY_URL
 
 WORKDIR /producer
 
@@ -12,5 +14,11 @@ RUN pip3 install -r requirements.txt
 COPY . .
 
 ENV PYTHONPATH "${PYTHONPATH}:/producer"
+# Convert build time arguments to runtime env variables
+ENV KAFKA_BROKER ${KAFKA_BROKER}
+ENV SCHEMA_REGISTRY_URL ${SCHEMA_REGISTRY_URL}
 
-CMD ["python3", "producer/main.py", "-b", "localhost:9092", "-s", "http://localhost:8081"]
+
+CMD exec python3 producer/main.py \
+    -b ${KAFKA_BROKER} \
+    -s ${SCHEMA_REGISTRY_URL}
