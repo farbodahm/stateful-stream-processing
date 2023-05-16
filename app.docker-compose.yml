@@ -1,0 +1,24 @@
+services:
+  producer:
+    build:
+      context: .
+      args:
+        KAFKA_BROKER: "localhost:9092"
+        SCHEMA_REGISTRY_URL: "http://localhost:8081"
+      dockerfile: producer.Dockerfile
+    network_mode: "host"
+
+  consumer:
+    build:
+      context: .
+      args:
+        KAFKA_BROKER: "localhost:9092"
+        SCHEMA_REGISTRY_URL: "http://localhost:8081"
+        CONSUMER_GROUP: "Consumer1"
+        DB_HOST: "127.0.0.1"
+        DB_PORT: "5432"
+        DB_USERNAME: "postgres"
+        DB_PASSWORD: "postgres"
+        DB_NAME: twitter
+      dockerfile: consumer.Dockerfile
+    network_mode: "host"

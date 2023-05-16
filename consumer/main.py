@@ -1,3 +1,5 @@
+from time import sleep
+
 from sqlalchemy.orm import Session
 
 from model.twitter_database_model import Base
@@ -9,6 +11,9 @@ from utility.generic_configs import Topics
 
 def main() -> None:
     """Starting point of the producer system"""
+    # TODO: Find a good way to wait for the producer to be ready
+    sleep(5)
+
     cli_args_parser = CliArgsParser()
     cli_args = cli_args_parser.parser.parse_args()
 
