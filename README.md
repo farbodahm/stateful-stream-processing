@@ -3,9 +3,24 @@ My university proposal on Stateful Stream Processing
 
 - [stateful-stream-processing](#stateful-stream-processing)
   - [Problem Description](#problem-description)
+    - [Architecture](#architecture)
+    - [Architecture - AWS Deployment](#architecture---aws-deployment)
+    - [Architecture - Dev Env](#architecture---dev-env)
   - [Development Environment](#development-environment)
 
 ## Problem Description
+TODO
+
+### Architecture
+![Architecture](./assets/StatefulStreamProcessing.png)
+TODO
+
+### Architecture - AWS Deployment
+![ArchitectureAWS](./assets/StatefulStreamProcessingAWS.png)
+TODO
+
+### Architecture - Dev Env
+![ArchitectureDevEnv](./assets/StatefulStreamProcessingDev.png)
 TODO
 
 ## Development Environment
