@@ -10,13 +10,16 @@ from confluent_kafka.schema_registry.protobuf import ProtobufDeserializer
 def main(args: argparse.Namespace) -> None:
     topic = args.topic
 
-    protobuf_deserializer = ProtobufDeserializer(twitter_pb2.Tweet,
-                                                 {'use.deprecated.format': False})
+    protobuf_deserializer = ProtobufDeserializer(
+        twitter_pb2.Tweet, {"use.deprecated.format": False}
+    )
 
-    consumer_conf = {'bootstrap.servers': args.bootstrap_servers,
-                     'group.id': args.group,
-                     'auto.offset.reset': "earliest",
-                     'enable.auto.commit': False, }
+    consumer_conf = {
+        "bootstrap.servers": args.bootstrap_servers,
+        "group.id": args.group,
+        "auto.offset.reset": "earliest",
+        "enable.auto.commit": False,
+    }
 
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
@@ -29,7 +32,8 @@ def main(args: argparse.Namespace) -> None:
                 continue
 
             tweet = protobuf_deserializer(
-                msg.value(), SerializationContext(topic, MessageField.VALUE))
+                msg.value(), SerializationContext(topic, MessageField.VALUE)
+            )
 
             if tweet is not None:
                 print(tweet)
@@ -39,16 +43,25 @@ def main(args: argparse.Namespace) -> None:
     consumer.close()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="ProtobufDeserializer example")
-    parser.add_argument('-b', dest="bootstrap_servers", required=True,
-                        help="Bootstrap broker(s) (host[:port])")
-    parser.add_argument('-s', dest="schema_registry", required=True,
-                        help="Schema Registry (http(s)://host[:port]")
-    parser.add_argument('-t', dest="topic", default="example_serde_protobuf",
-                        help="Topic name")
-    parser.add_argument('-g', dest="group", default="example_serde_protobuf",
-                        help="Consumer group")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ProtobufDeserializer example")
+    parser.add_argument(
+        "-b",
+        dest="bootstrap_servers",
+        required=True,
+        help="Bootstrap broker(s) (host[:port])",
+    )
+    parser.add_argument(
+        "-s",
+        dest="schema_registry",
+        required=True,
+        help="Schema Registry (http(s)://host[:port]",
+    )
+    parser.add_argument(
+        "-t", dest="topic", default="example_serde_protobuf", help="Topic name"
+    )
+    parser.add_argument(
+        "-g", dest="group", default="example_serde_protobuf", help="Consumer group"
+    )
 
     main(parser.parse_args())
