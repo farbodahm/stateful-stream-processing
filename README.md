@@ -1,4 +1,7 @@
 # stateful-stream-processing
+[![CI Lint Actions Status](https://github.com/farbodahm/stateful-stream-processing/workflows/Lint/badge.svg)](https://github.com/farbodahm/stateful-stream-processing/actions/)
+[![CI Docker Compose Build Actions Status](https://github.com/farbodahm/stateful-stream-processing/workflows/build-docker-compose/badge.svg)](https://github.com/farbodahm/stateful-stream-processing/actions/)
+
 My university proposal on Stateful Stream Processing
 
 - [stateful-stream-processing](#stateful-stream-processing)
