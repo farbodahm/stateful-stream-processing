@@ -1,0 +1,14 @@
+name: build-docker-compose
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose
+        run: docker-compose -f app.docker-compose.yml build
