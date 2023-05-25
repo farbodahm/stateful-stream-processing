@@ -50,7 +50,8 @@ docker-compose -f app.docker-compose.yml up --build
 
 If you wanted to tear down everything, then simply run:
 ```bash
-docker-compose down
+docker-compose -f infra.docker-compose.yml down
+docker-compose -f app.docker-compose.yml down
 ```
 
 **NOTE:** This will also deletes all of the Kafka topics and database, Be careful if you want keep the data produced in it.
