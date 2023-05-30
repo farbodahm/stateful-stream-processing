@@ -27,6 +27,25 @@ services:
     depends_on:
       - producer
 
+  processor:
+    build:
+      context: .
+      args:
+        DB_HOST: "db"
+        DB_PORT: "5432"
+        DB_USERNAME: "postgres"
+        DB_PASSWORD: "postgres"
+        DB_NAME: "twitter"
+        WS_HOST: "0.0.0.0"
+        WS_PORT: "8765"
+      dockerfile: processor.Dockerfile
+    networks:
+      - stateful-stream-processing-network
+    ports:
+      - "8765:8765"
+    depends_on:
+      - consumer
+
 networks:
   stateful-stream-processing-network:
     name: stateful_stream_processing_network
