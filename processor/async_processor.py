@@ -32,6 +32,7 @@ class AsyncProcessor:
         self.ws_port = int(ws_port)
         self._async_session = async_session
 
+        logger.info(f"Query pool size: {query_pool_size}")
         # Queue which holds the results of the queries
         self._queue = asyncio.Queue(query_pool_size)
 

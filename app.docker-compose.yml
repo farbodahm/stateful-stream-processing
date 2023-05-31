@@ -38,6 +38,7 @@ services:
         DB_NAME: "twitter"
         WS_HOST: "0.0.0.0"
         WS_PORT: "8765"
+        WS_WRITE_POOL_SIZE: "10"
       dockerfile: processor.Dockerfile
     networks:
       - stateful-stream-processing-network

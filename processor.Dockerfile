@@ -7,6 +7,7 @@ ARG DB_PASSWORD
 ARG DB_NAME
 ARG WS_HOST
 ARG WS_PORT
+ARG WS_WRITE_POOL_SIZE
 
 WORKDIR /processor
 
@@ -28,6 +29,7 @@ ENV DB_PASSWORD ${DB_PASSWORD}
 ENV DB_NAME ${DB_NAME}
 ENV WS_HOST ${WS_HOST}
 ENV WS_PORT ${WS_PORT}
+ENV WS_WRITE_POOL_SIZE ${WS_WRITE_POOL_SIZE}
 
 EXPOSE ${WS_PORT}
 
@@ -38,4 +40,5 @@ CMD exec python3 processor/main.py \
     --db-password ${DB_PASSWORD} \
     --db-name ${DB_NAME} \
     --ws-host ${WS_HOST} \
-    --ws-port ${WS_PORT}
+    --ws-port ${WS_PORT} \
+    --ws-write-pool-size ${WS_WRITE_POOL_SIZE}

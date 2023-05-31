@@ -83,3 +83,13 @@ class CliArgsParser:
             default="8765",
             help="WebSocket port to listen on",
         )
+        self.parser.add_argument(
+            "--ws-write-pool-size",
+            dest="ws_write_pool_size",
+            default=10,
+            type=int,
+            help=(
+                "Pool buffer for writing queries on WebSocket. If pool size reached that limit,"
+                "no new queries will run until buffer gets written."
+            ),
+        )

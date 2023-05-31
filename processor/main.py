@@ -19,7 +19,10 @@ def main() -> None:
     async_session = async_sessionmaker(clients.db_async_engine, expire_on_commit=False)
 
     processor = AsyncProcessor(
-        async_session=async_session, ws_host=cli_args.ws_host, ws_port=cli_args.ws_port
+        async_session=async_session,
+        ws_host=cli_args.ws_host,
+        ws_port=cli_args.ws_port,
+        query_pool_size=cli_args.ws_write_pool_size,
     )
     asyncio.run(processor.run())
 
