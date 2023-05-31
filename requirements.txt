@@ -1,8 +1,10 @@
+asyncpg==0.27.0
 autopep8==2.0.2
 certifi==2022.12.7
 charset-normalizer==3.1.0
 confluent-kafka==2.1.0
 Faker==18.4.0
+gevent==22.10.2
 greenlet==2.0.2
 idna==3.4
 protobuf==4.22.1
@@ -15,3 +17,7 @@ SQLAlchemy==2.0.12
 tomli==2.0.1
 typing_extensions==4.5.0
 urllib3==1.26.15
+websocket==0.2.1
+websockets==11.0.3
+zope.event==4.6
+zope.interface==6.0

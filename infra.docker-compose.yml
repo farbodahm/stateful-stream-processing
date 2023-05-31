@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.3
@@ -9,6 +9,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - stateful-stream-processing-network
 
   kafka:
     image: confluentinc/cp-kafka:7.3.3
@@ -23,6 +25,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
@@ -30,6 +33,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    networks:
+      - stateful-stream-processing-network
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.3.3
@@ -44,6 +49,8 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    networks:
+      - stateful-stream-processing-network
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.3.3
@@ -62,6 +69,8 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
+    networks:
+      - stateful-stream-processing-network
 
   # ---------------- End of Kafka related containers ----------------
   db:
@@ -75,3 +84,9 @@ services:
       POSTGRES_DB: twitter
     ports:
       - "5432:5432"
+    networks:
+      - stateful-stream-processing-network
+
+networks:
+  stateful-stream-processing-network:
+    name: stateful_stream_processing_network
