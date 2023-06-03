@@ -60,3 +60,9 @@ class CliArgsParser:
             required=True,
             help="Schema Registry (http(s)://host[:port]",
         )
+        self.parser.add_argument(
+            "--sample-twitter-data-path",
+            dest="sample_twitter_data_path",
+            required=False,
+            help="Path to sample Twitter data used for generating fake data",
+        )

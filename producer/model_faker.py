@@ -1,7 +1,7 @@
 """This package will generate random data (with model type) using Faker."""
 
 from faker import Faker
-from typing import List
+from typing import List, Optional
 import random
 import datetime
 
@@ -15,8 +15,9 @@ class FakeDataModel:
 
     ID_MAX_INT = 2147483647
 
-    def __init__(self) -> None:
+    def __init__(self, texts: Optional[List[str]] = None) -> None:
         self._faker = Faker()
+        self._texts = texts
 
         # List of all of the generated tweet ids so far
         self._generated_tweet_ids: List[str] = []
@@ -34,10 +35,12 @@ class FakeDataModel:
             )
             raise UserNotFoundError("There aren't any users created")
 
+        text = self._faker.text() if self._texts is None else random.choice(self._texts)
+
         tweet = twitter_pb2.Tweet(
             id=self._generate_new_tweet_id(),
             user_id=random.choice(self._generated_user_ids),
-            text=self._faker.text(),
+            text=text,
         )
         tweet.tweeted_date.FromDatetime(datetime.datetime.now())
 
@@ -101,11 +104,17 @@ class FakeDataModel:
             )
             raise TweetNotFoundError("There aren't any tweets created")
 
+        text = (
+            self._faker.sentence()
+            if self._texts is None
+            else random.choice(self._texts)
+        )
+
         comment = twitter_pb2.Comment(
             id=self._generate_new_comment_id(),
             tweet_id=random.choice(self._generated_tweet_ids),
             user_id=random.choice(self._generated_user_ids),
-            text=self._faker.sentence(),
+            text=text,
         )
         comment.commented_date.FromDatetime(datetime.datetime.now())
 
