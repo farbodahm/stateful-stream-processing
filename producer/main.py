@@ -1,5 +1,7 @@
 import random
 from time import sleep
+from typing import List
+
 
 from config import CliArgsParser, ClientGenerator
 from twitter_model_producer import FakeDataProducer
@@ -7,11 +9,19 @@ from utility.exceptions import NotFoundError
 from utility.logger import logger
 from utility.generic_configs import TOPICS_TO_PRODUCING_PROBABILITY
 from utility.generic_configs import Topics
+from model_faker import FakeDataModel
 
 TOPICS = [topic for topic in TOPICS_TO_PRODUCING_PROBABILITY.keys()]
 PROBABILITIES = [
     probability for probability in TOPICS_TO_PRODUCING_PROBABILITY.values()
 ]
+
+
+def get_texts(path: str) -> List[str]:
+    """Returns list of texts from the given file"""
+    with open(path, "r") as file:
+        lines = file.readlines()
+        return lines
 
 
 def get_next_topic() -> str:
@@ -70,8 +80,17 @@ def main() -> None:
     cli_args = cli_args_parser.parser.parse_args()
 
     clients = ClientGenerator(cli_args)
+
+    if cli_args.sample_twitter_data_path is not None:
+        texts = get_texts(path=cli_args.sample_twitter_data_path)
+        fake_data_generator = FakeDataModel(texts=texts)
+    else:
+        fake_data_generator = FakeDataModel()
+
     producer = FakeDataProducer(
-        producer=clients.producer, schema_registry_client=clients.schema_registry_client
+        producer=clients.producer,
+        schema_registry_client=clients.schema_registry_client,
+        fake_data_generator=fake_data_generator,
     )
 
     generate_fake_data(producer=producer)

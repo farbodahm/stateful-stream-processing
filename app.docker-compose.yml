@@ -5,6 +5,7 @@ services:
       args:
         KAFKA_BROKER: "kafka:29092"
         SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+        SAMPLE_TWITTER_DATA_PATH: "assets/tweets.txt"
       dockerfile: producer.Dockerfile
     networks:
       - stateful-stream-processing-network

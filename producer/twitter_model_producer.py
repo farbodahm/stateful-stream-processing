@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 
 from confluent_kafka.serialization import (
     StringSerializer,
@@ -24,9 +24,12 @@ class FakeDataProducer:
     """Main class for generating next model and producing it in Kafka."""
 
     def __init__(
-        self, producer: Producer, schema_registry_client: SchemaRegistryClient
+        self,
+        producer: Producer,
+        schema_registry_client: SchemaRegistryClient,
+        fake_data_generator: FakeDataModel,
     ) -> None:
-        self.faker = FakeDataModel()
+        self.faker = fake_data_generator
         self.producer = producer
         self.schema_registry_client = schema_registry_client
 
