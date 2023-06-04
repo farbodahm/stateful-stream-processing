@@ -15,8 +15,10 @@ class FakeDataModel:
 
     ID_MAX_INT = 2147483647
 
-    def __init__(self, texts: Optional[List[str]] = None) -> None:
-        self._faker = Faker()
+    def __init__(
+        self, faker: Faker = Faker(), texts: Optional[List[str]] = None
+    ) -> None:
+        self._faker = faker
         self._texts = texts
 
         # List of all of the generated tweet ids so far
