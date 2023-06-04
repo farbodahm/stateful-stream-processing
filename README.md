@@ -1,4 +1,5 @@
 # stateful-stream-processing
+[![CI Unit Test Actions Status](https://github.com/farbodahm/stateful-stream-processing/workflows/Unit%20Test/badge.svg)](https://github.com/farbodahm/stateful-stream-processing/actions/)
 [![CI Lint Actions Status](https://github.com/farbodahm/stateful-stream-processing/workflows/Lint/badge.svg)](https://github.com/farbodahm/stateful-stream-processing/actions/)
 [![CI Docker Compose Build Actions Status](https://github.com/farbodahm/stateful-stream-processing/workflows/build-docker-compose/badge.svg)](https://github.com/farbodahm/stateful-stream-processing/actions/)
 
