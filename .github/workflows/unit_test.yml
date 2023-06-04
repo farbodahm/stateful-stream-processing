@@ -1,0 +1,35 @@
+name: Unit Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+ unit-test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+  
+    - name: Install dependencies
+      run: |
+        # Required for asyncpg and psycopg2 
+        apt update && apt -y install libpq-dev gcc
+        pip install pytest
+        pip install -r requirements.txt
+      
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
+
+    - name: Run unit tests
+      run: pytest -v
