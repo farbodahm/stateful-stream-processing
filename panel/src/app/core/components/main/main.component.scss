@@ -1,0 +1,16 @@
+.sidenav-container {
+  min-height: 100vh;
+  width: 100%;
+}
+.sidenav-content {
+  height: 100vh;
+  overflow-y: hidden;
+  .navbar {
+    height: 8%;
+  }
+  .router-outlet-container {
+    padding: 20px;
+    height: 92%;
+    overflow-y: auto;
+  }
+}
