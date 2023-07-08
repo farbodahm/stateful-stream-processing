@@ -11,13 +11,13 @@
     <span class="spacer"></span>
     <button mat-button [matMenuTriggerFor]="menu">
       <span *ngIf="!isMobile">
-        Alireza
+        Farbod Ahmadian
       </span>
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu" [xPosition]="'before'">
       <button *ngIf="isMobile" mat-menu-item>
-        Alireza
+        Farbod Ahmadian
       </button>
       <button mat-menu-item (click)="logout()" color="warn">
         <mat-icon>power_settings_new</mat-icon>
