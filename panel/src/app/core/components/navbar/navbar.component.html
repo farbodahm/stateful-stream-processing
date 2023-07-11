@@ -1,0 +1,28 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-icon-button (click)="toggleMenu()" *ngIf="!hasBack">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="hasBack">
+      <mat-icon (click)="back()">arrow_back</mat-icon>
+    </button>
+    <h4></h4>
+
+    <span class="spacer"></span>
+    <button mat-button [matMenuTriggerFor]="menu">
+      <span *ngIf="!isMobile">
+        Farbod Ahmadian
+      </span>
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" [xPosition]="'before'">
+      <button *ngIf="isMobile" mat-menu-item>
+        Farbod Ahmadian
+      </button>
+      <button mat-menu-item (click)="logout()" color="warn">
+        <mat-icon>power_settings_new</mat-icon>
+        logout
+      </button>
+    </mat-menu>
+  </mat-toolbar-row>
+</mat-toolbar>

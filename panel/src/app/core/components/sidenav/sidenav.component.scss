@@ -1,0 +1,25 @@
+$width: 280px;
+
+.sidenav-content {
+  width: $width;
+  display: inline-block;
+}
+
+img {
+  width: 100%;
+}
+
+.footer {
+  font-size: 11px;
+  color: grey;
+  text-align: center;
+  margin-top: 50px;
+  white-space: pre-line;
+}
+.container {
+  background: #F2F2F2;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
+}

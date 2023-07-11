@@ -1,0 +1,182 @@
+@import "@angular/material/theming";
+
+$layout-breakpoints: (
+  sm: 600px,
+  md: 960px,
+  lg: 1280px
+);
+
+$border-radius: 16px;
+
+$primary-color: #01BAEF;
+$warn-color: #E64A19;
+$accent-color: #00d170;
+$success-color: #00CC6D;
+$success-text-color: #008F4C;
+$sidenav-background-color: #073B4C;
+$prepending-color: #A3C4BC;
+$arrivedAtPickup-color: #B39AFD;
+$pending-color: #F57C00;
+$verification-color: #1F86C0;
+$picked-up-color: #FFC300;
+$batched-color: #795548;
+$accepted-color: #303F9F;
+$arrivedAtDropOff-color:#7B1FA2;
+$returned-color: #828282;
+$cancel-color: #FF0000;
+
+
+$white: #fff;
+$lightest: #F2F2F2;
+$lighter: #E3E3E3;
+$dark-lightest: #BFC0C0;
+$dark-lighter: #808080;
+//$dark-light: #4d4d4d;
+$dark: #212121;
+$black: #000;
+$background-color: $lightest;
+$text-secondary-color: $dark-lighter;
+$text-main-color: $dark;
+
+
+$gray-50: rgba($black, 0.16);
+$gray-100: #f8f8f8;
+$gray-200: #eee;
+
+// Generated palette using: https://coolors.co/
+$primary-palette: (
+  50: #EBFBFF,
+  100: #C2F2FF,
+  200: #9AE9FE,
+  300: #71E0FE,
+  400: #20CEFE,
+  500: $primary-color,
+  600: #01AFDF,
+  700: #019FCB,
+  800: #017FA2,
+  900: #016F8E,
+  A100: #ffffff,
+  A200: #D6F6FF,
+  A400: #AEEDFF,
+  A700: #85E4FE,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000
+  )
+);
+
+$accent-palette: (
+  50: #EBFFF5,
+  100: #C2FFE2,
+  200: #99FFCF,
+  300: #70FFBC,
+  400: #1FFF96,
+  500: $accent-color,
+  600: #00CC6D,
+  700: #00B862,
+  800: #00A357,
+  900: #008F4C,
+  A100: #f2fff5,
+  A200: #bfffcf,
+  A400: #8cffa9,
+  A700: #73ff96,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000
+  )
+);
+
+$warn-palette: (
+  50: #F9D3C8,
+  100: #F5B6A3,
+  200: #F1997E,
+  300: #ED7C5A,
+  400: #E95F35,
+  500: $warn-color,
+  600: #DC4618,
+  700: #CA4016,
+  800: #B83A14,
+  900: #A53512,
+  A100: #ffffff,
+  A200: #FDF0ED,
+  A400: #ffbfbf,
+  A700: #ffa6a6,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000
+  )
+);
+
+$dark-palette: (
+  50: #e0e0e0,
+  100: #b3b3b3,
+  200: #808080,
+  300: #4d4d4d,
+  400: #262626,
+  500: #000000,
+  600: #000000,
+  700: #000000,
+  800: #000000,
+  900: #000000,
+  A100: #a6a6a6,
+  A200: #8c8c8c,
+  A400: #737373,
+  A700: #666666,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #ffffff,
+    A700: #ffffff
+  )
+);
+// Signature: @function mat-palette($base-palette, $default, $lighter, $darker)
+$app-primary: mat-palette($primary-palette, 500, 300, 700);
+$app-accent: mat-palette($accent-palette, 500, 300, 700);
+$app-warn: mat-palette($warn-palette, 500, 300, 700);
+$app-dark: mat-palette($dark-palette, 500, 300, 700);
