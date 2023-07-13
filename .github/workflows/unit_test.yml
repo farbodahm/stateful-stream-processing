@@ -32,4 +32,4 @@ jobs:
         echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
 
     - name: Run unit tests
-      run: pytest -v
+      run: pytest -v tests/
