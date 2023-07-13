@@ -85,8 +85,18 @@ class AsyncProcessor:
         TODO: Think about logic of this function on how to retrieve queries.
         """
         return [
-            "SELECT * FROM tweet",
-            "SELECT * FROM comment",
+            """SELECT u.first_name, u.last_name, u.id, u.gender, COUNT(t.id) as tweet_count
+FROM "user" u
+INNER JOIN tweet t ON u.id = t.user_id
+GROUP BY u.id, u.first_name, u.last_name, u.gender
+ORDER BY tweet_count DESC
+LIMIT 10;""",
+            """SELECT t.id, t.text, COUNT(l.tweet_id) as like_count
+FROM tweet t
+INNER JOIN tweet_like l ON t.id = l.tweet_id
+GROUP BY t.id, t.text
+ORDER BY like_count DESC
+LIMIT 10;""",
         ]
 
     async def run(self) -> None:
