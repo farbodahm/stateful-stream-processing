@@ -1,4 +1,3 @@
-
 import asyncio
 from websockets.server import serve
 from faker import Faker
@@ -10,15 +9,17 @@ from time import sleep
 
 fake = Faker()
 
+
 def get_random_message():
     msg = {
         "name": fake.name(),
         "email": fake.email(),
         "text": fake.text(),
-        "id": random.randint(0, 10000)
+        "id": random.randint(0, 10000),
     }
 
     return msg
+
 
 async def echo(websocket):
     print("Connected")
@@ -34,5 +35,6 @@ async def main():
     async with serve(echo, "localhost", 8765):
         print("Started")
         await asyncio.Future()  # run forever
+
 
 asyncio.run(main())
